@@ -27,7 +27,7 @@ class NotifyPage extends StatefulWidget {
 
 class _NotifyPageState extends State<NotifyPage>
     with AutomaticKeepAliveClientMixin<NotifyPage>, GSYListState<NotifyPage> {
-  final SlidableController slidableController = new SlidableController();
+  // final SlidableController slidableController = new SlidableController();
 
   int selectIndex = 0;
 
@@ -41,27 +41,48 @@ class _NotifyPageState extends State<NotifyPage>
     ///只有未读消息支持 Slidable 滑动效果
     return new Slidable(
       key: ValueKey<String>(index.toString() + "_" + selectIndex.toString()),
-      controller: slidableController,
-      actionPane: SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
       child: _renderEventItem(notification),
-      dismissal: SlidableDismissal(
-        child: SlidableDrawerDismissal(),
-        onDismissed: (actionType) {},
-      ),
-      secondaryActions: <Widget>[
-        new IconSlideAction(
-          caption: GSYLocalizations.i18n(context)!.notify_readed,
-          color: Colors.redAccent,
-          icon: Icons.delete,
-          onTap: () {
-            UserDao.setNotificationAsReadDao(notification.id.toString())
-                .then((res) {
-              showRefreshLoading();
-            });
-          },
+      endActionPane: ActionPane(
+        extentRatio: 0.25,
+        motion: const BehindMotion(),
+        dismissible: DismissiblePane(
+          onDismissed: (){},
         ),
-      ],
+        children: [
+          SlidableAction(
+            backgroundColor: Colors.redAccent ,
+            icon: Icons.delete,
+            label: GSYLocalizations.i18n(context)!.notify_readed,
+            onPressed: (context){
+              UserDao.setNotificationAsReadDao(notification.id.toString())
+                  .then((res) {
+                showRefreshLoading();
+              });
+            },
+          )
+        ],
+      ),
+      // controller: slidableController,
+      // actionPane: SlidableBehindActionPane(),
+      // actionExtentRatio: 0.25,
+      // child: _renderEventItem(notification),
+      // dismissal: SlidableDismissal(
+      //   child: SlidableDrawerDismissal(),
+      //   onDismissed: (actionType) {},
+      // ),
+      // secondaryActions: <Widget>[
+      //   new IconSlideAction(
+      //     caption: GSYLocalizations.i18n(context)!.notify_readed,
+      //     color: Colors.redAccent,
+      //     icon: Icons.delete,
+      //     onTap: () {
+      //       UserDao.setNotificationAsReadDao(notification.id.toString())
+      //           .then((res) {
+      //         showRefreshLoading();
+      //       });
+      //     },
+      //   ),
+      // ],
     );
   }
 
